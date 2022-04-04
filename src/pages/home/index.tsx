@@ -1,10 +1,11 @@
-import { Button } from "../../components/Button";
 import { useNavigate } from "react-router-dom";
+import { Button } from "../../components/Button";
 
 export function Home() {
   const navigate = useNavigate();
+
   const goToInputs = () => {
-    navigate("/inputsview");
+    navigate("/inputs");
   };
   const goToProducts = () => {
     navigate("/products");

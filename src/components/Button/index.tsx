@@ -11,7 +11,7 @@ interface IButton {
 
 export const Button = ({
   children,
-  color = "secondary",
+  color = "primary",
   onClick,
   variant = "outlined",
   size = "large",
