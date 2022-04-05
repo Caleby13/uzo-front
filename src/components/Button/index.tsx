@@ -16,7 +16,7 @@ export const Button = ({
   variant = "outlined",
   size = "large",
 }: IButton) => (
-  <div style={{ marginTop: "15px" }}>
+  <div style={{ marginTop: "15px", marginRight: "10px" }}>
     <ButtonMaterial
       size={size}
       fullWidth

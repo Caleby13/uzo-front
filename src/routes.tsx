@@ -1,9 +1,10 @@
-import React from "react";
+import React, { Component } from "react";
 import { Route, Routes } from "react-router-dom";
 import { Home } from "./pages/home";
 import { InputAddUpdate } from "./pages/inputs/add_update";
 import { InputView } from "./pages/inputs/view";
 import { Login } from "./pages/Login";
+import { isAuthenticated } from "./services/auth";
 
 export function AppRoutes() {
   return (
