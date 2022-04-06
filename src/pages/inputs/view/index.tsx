@@ -7,6 +7,7 @@ import { useCallback, useEffect, useState } from "react";
 import api from "../../../services/api";
 import { TableGrid } from "../../../components/TableGrid";
 import { GridColDef } from "@mui/x-data-grid";
+import { Menu } from "../../../components/Menu";
 
 interface IInput {
   _id: string;
@@ -81,13 +82,7 @@ export function InputView() {
 
   return (
     <>
-      <div
-        style={{
-          paddingBottom: "40px",
-        }}
-      >
-        <Title>Insumos</Title>
-
+      <Menu>
         <Grid type={"container"} justifyContent={"flex-start"}>
           <TextField
             xs={9}
@@ -99,29 +94,10 @@ export function InputView() {
             <Button onClick={() => console.log()}>Buscar Registros</Button>
           </Grid>
         </Grid>
-        <TableGrid columns={columns} rows={inputs} />
-      </div>
-      <div
-        style={{
-          position: "absolute",
-          left: "5%",
-          bottom: "10px",
-          width: "90%",
-        }}
-      >
-        <Grid type={"container"} justifyContent={"space-between"}>
-          <Grid type={"item"} xs={8}>
-            <Grid type={"container"} justifyContent={"flex-start"}>
-              <Button onClick={goBack}>Incluir</Button>
-              <Button onClick={goBack}>Alterar</Button>
-              <Button onClick={goBack}>Excluir</Button>
-            </Grid>
-          </Grid>
-          <Grid type={"item"} xs={1}>
-            <Button onClick={goBack}>Voltar</Button>
-          </Grid>
+        <Grid type={"container"}>
+          <TableGrid columns={columns} rows={inputs} />
         </Grid>
-      </div>
+      </Menu>
     </>
   );
 }

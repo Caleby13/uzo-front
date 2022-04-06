@@ -1,9 +1,9 @@
 import { Menu } from "../../../components/Menu";
 
-export function InputAddUpdate() {
+export function ProductView() {
   return (
     <Menu>
-      <div>InputAddUpdate</div>
+      <div>ProductView</div>
     </Menu>
   );
 }
