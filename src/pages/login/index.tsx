@@ -7,8 +7,8 @@ import { Grid } from "../../components/Grid";
 import { Loading } from "../../components/Loading";
 import { TextField } from "../../components/TextField";
 import { Title } from "../../components/Title";
+import { useAuth } from "../../hooks/auth";
 import api from "../../services/api";
-import { isAuthenticated } from "../../services/auth";
 
 interface IUsers {
   _id: string;
@@ -24,48 +24,25 @@ export function Login() {
   const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const navigate = useNavigate();
+  const { login } = useAuth();
 
   const loadData = useCallback(async () => {
     try {
-      const { data } = await api.get("/user");
+      const client = api();
+      const { data } = await client.get("/user");
       setUsers(data);
     } catch (error) {
       toast.warn("A api ainda esta iniciando, recarregue a página");
     }
   }, []);
 
-  const login = useCallback(async () => {
-    try {
-      setLoading(true);
-      const { data } = await api.post("/authenticate", {
-        user_name: user,
-        password,
-      });
-
-      if (!!data?.token) {
-        localStorage.setItem("token", JSON.stringify(data));
-        toast.success(`${data.user.name} seu login realizado com sucesso`);
-      }
-      if (authenticated()) {
-        navigate("/home");
-      }
-    } catch (err) {
-      const message = err?.response?.data?.error || "Erro";
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
+  const handleSubmit = useCallback(async () => {
+    setLoading(true);
+    login(user, password);
+    setLoading(false);
   }, [user, password]);
 
-  const authenticated = useCallback(() => {
-    return isAuthenticated();
-  }, []);
-
   useEffect(() => {
-    if (authenticated()) {
-      navigate("/home");
-    }
     loadData();
   }, []);
 
@@ -95,7 +72,7 @@ export function Login() {
               id: user._id,
               label: user.user_name,
             }))}
-            xs={10}
+            xs={4}
             value={user}
             onChange={(event, newValue) => {
               setUser(`${newValue.label}`);
@@ -104,7 +81,7 @@ export function Login() {
         </Grid>
         <Grid type={"container"} justifyContent={"center"}>
           <TextField
-            xs={10}
+            xs={4}
             variant={"outlined"}
             type={"password"}
             placeHolder={"Insira a senha"}
@@ -113,8 +90,8 @@ export function Login() {
           />
         </Grid>
         <Grid type={"container"} justifyContent={"center"}>
-          <Grid type={"item"} xs={5}>
-            <Button onClick={login}>Logar</Button>
+          <Grid type={"item"} xs={2}>
+            <Button onClick={handleSubmit}>Logar</Button>
           </Grid>
         </Grid>
       </div>

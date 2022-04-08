@@ -10,6 +10,7 @@ export const TableGrid = ({ columns, rows }: ITableGrid) => {
   return (
     <div style={{ height: 400, width: "100%" }}>
       <DataGrid
+        getRowId={(e) => e._id}
         rows={rows}
         columns={columns}
         pageSize={5}

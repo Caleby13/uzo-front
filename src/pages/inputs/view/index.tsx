@@ -1,13 +1,14 @@
-import { Button } from "../../../components/Button";
-import { Grid } from "../../../components/Grid";
-import { Title } from "../../../components/Title";
-import { TextField } from "../../../components/TextField";
-import { useHistory } from "../../../hooks/history";
-import { useCallback, useEffect, useState } from "react";
-import api from "../../../services/api";
-import { TableGrid } from "../../../components/TableGrid";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
+import DeleteIcon from "@mui/icons-material/Delete";
 import { GridColDef } from "@mui/x-data-grid";
-import { Menu } from "../../../components/Menu";
+import { useCallback, useEffect, useState } from "react";
+import { IOptions, Menu } from "../../../components/Menu";
+import { TableGrid } from "../../../components/TableGrid";
+import { TextField } from "../../../components/TextField";
+import { useAuth } from "../../../hooks/auth";
+import { useHistory } from "../../../hooks/history";
+import api from "../../../services/api";
 
 interface IInput {
   _id: string;
@@ -23,9 +24,10 @@ interface IInput {
 export function InputView() {
   const [keyword, setKeyword] = useState<string>("");
   const [inputs, setInputs] = useState<IInput[]>([]);
+  const { token } = useAuth();
 
   const columns: GridColDef[] = [
-    { field: "_id", headerName: "ID", flex: 0.1 },
+    { field: "_id", headerName: "ID", flex: 0.06 },
     { field: "name", headerName: "Nome", flex: 0.3 },
     { field: "amount", headerName: "Quantidade", type: "number", flex: 0.1 },
     {
@@ -67,7 +69,9 @@ export function InputView() {
 
   const loadData = useCallback(async () => {
     try {
-      const { data } = await api.get("/inputs");
+      const client = api(token);
+      const { data } = await client.get("/input");
+      console.log(data);
       setInputs(data);
     } catch (error) {
       console.log(error);
@@ -80,23 +84,39 @@ export function InputView() {
 
   console.log(inputs);
 
+  const menu: IOptions[] = [
+    {
+      name_page: "Incluir",
+      icon: <AddCircleIcon />,
+      redirect: "/users",
+      hide: false,
+    },
+    {
+      name_page: "Alterar",
+      icon: <ChangeCircleIcon />,
+      redirect: "/inputs",
+      hide: false,
+    },
+    {
+      name_page: "Excluir",
+      icon: <DeleteIcon />,
+      redirect: "/products",
+      hide: false,
+    },
+  ];
+
   return (
     <>
-      <Menu>
-        <Grid type={"container"} justifyContent={"flex-start"}>
-          <TextField
-            xs={9}
-            placeHolder={"Insira o nome do insumo"}
-            label={"Nome do insumo"}
-            onChange={(e) => setKeyword(e.target.value)}
-          />
-          <Grid type={"item"} xs={3}>
-            <Button onClick={() => console.log()}>Buscar Registros</Button>
-          </Grid>
-        </Grid>
-        <Grid type={"container"}>
-          <TableGrid columns={columns} rows={inputs} />
-        </Grid>
+      <Menu options={menu}>
+        <TextField
+          xs={12}
+          placeHolder={"Insira o nome do insumo"}
+          label={"Nome do insumo"}
+          onChange={(e) => setKeyword(e.target.value)}
+          variant={"outlined"}
+        />
+
+        <TableGrid columns={columns} rows={inputs} />
       </Menu>
     </>
   );

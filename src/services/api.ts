@@ -1,7 +1,11 @@
 import axios from "axios";
 
-const api = axios.create({
-  baseURL: "https://uzoback.herokuapp.com",
-});
+const api = (token?: string) =>
+  axios.create({
+    baseURL: "https://uzoback.herokuapp.com",
+    headers: {
+      authorization: token ? `Bearer ${token}` : null,
+    },
+  });
 
 export default api;

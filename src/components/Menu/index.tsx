@@ -94,53 +94,50 @@ const Drawer = styled(MuiDrawer, {
     "& .MuiDrawer-paper": closedMixin(theme),
   }),
 }));
-
-interface IMenu {
-  children: React.ReactNode;
-  options?: {
-    name_page: string;
-    icon: React.ReactElement;
-    redirect: string;
-    hide: boolean;
-  }[];
-}
-
-const menu: {
+export interface IOptions {
   name_page: string;
   icon: React.ReactElement;
   redirect: string;
   hide: boolean;
-}[] = [
-  {
-    name_page: "Home",
-    icon: <AccountCircleIcon />,
-    redirect: "/home",
-    hide: true,
-  },
-  {
-    name_page: "Usuários",
-    icon: <AccountCircleIcon />,
-    redirect: "/users",
-    hide: false,
-  },
-  {
-    name_page: "Insumos",
-    icon: <AutoAwesomeMosaicIcon />,
-    redirect: "/inputs",
-    hide: false,
-  },
-  {
-    name_page: "Products",
-    icon: <AddShoppingCartIcon />,
-    redirect: "/products",
-    hide: false,
-  },
-];
+  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
+}
+interface IMenu {
+  children: React.ReactNode;
+  options?: IOptions[];
+}
 
 export const Menu = ({ children, options }: IMenu) => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [index, setIndex] = React.useState(0);
+
+  const menu: IOptions[] = [
+    {
+      name_page: "Home",
+      icon: <AccountCircleIcon />,
+      redirect: "/home",
+      hide: true,
+    },
+    {
+      name_page: "Usuários",
+      icon: <AccountCircleIcon />,
+      redirect: "/users",
+      hide: false,
+    },
+    {
+      name_page: "Insumos",
+      icon: <AutoAwesomeMosaicIcon />,
+      redirect: "/inputs",
+      hide: false,
+    },
+    {
+      name_page: "Products",
+      icon: <AddShoppingCartIcon />,
+      redirect: "/products",
+      hide: false,
+    },
+  ];
+
+  const [namePage, setNamePage] = React.useState(menu[0].name_page);
 
   const navigate = useNavigate();
 
@@ -154,6 +151,10 @@ export const Menu = ({ children, options }: IMenu) => {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const currentPage = (index: number) => {
+    setNamePage(menu[index].name_page);
   };
 
   return (
@@ -174,7 +175,7 @@ export const Menu = ({ children, options }: IMenu) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div">
-            {menu[index].name_page}
+            {namePage}
           </Typography>
         </Toolbar>
       </AppBar>
@@ -195,7 +196,7 @@ export const Menu = ({ children, options }: IMenu) => {
               !menu.hide && (
                 <ListItemButton
                   onClick={() => {
-                    setIndex(index);
+                    currentPage(index);
                     goTo(menu.redirect);
                   }}
                   key={menu.name_page}
@@ -221,6 +222,38 @@ export const Menu = ({ children, options }: IMenu) => {
                 </ListItemButton>
               )
           )}
+        </List>
+        {!!options && <Divider />}
+        <List>
+          {!!options &&
+            options.map(
+              (option, index) =>
+                !option.hide && (
+                  <ListItemButton
+                    onClick={() => option.onClick}
+                    key={option.name_page}
+                    sx={{
+                      minHeight: 48,
+                      justifyContent: open ? "initial" : "center",
+                      px: 2.5,
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        mr: open ? 3 : "auto",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {option.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={option.name_page}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                )
+            )}
         </List>
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
