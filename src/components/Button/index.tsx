@@ -1,5 +1,6 @@
 import { ReactNode, MouseEventHandler } from "react";
 import { Button as ButtonMaterial } from "@material-ui/core";
+import { Grid } from "../Grid";
 
 interface IButton {
   children: ReactNode;
@@ -7,6 +8,7 @@ interface IButton {
   size?: "small" | "medium" | "large";
   variant?: "contained" | "outlined";
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  xs: false | "auto" | true | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 }
 
 export const Button = ({
@@ -15,8 +17,9 @@ export const Button = ({
   onClick,
   variant = "outlined",
   size = "large",
+  xs,
 }: IButton) => (
-  <div style={{ marginTop: "15px", marginRight: "10px" }}>
+  <Grid type={"item"} xs={xs}>
     <ButtonMaterial
       size={size}
       fullWidth
@@ -26,5 +29,5 @@ export const Button = ({
     >
       {children}
     </ButtonMaterial>
-  </div>
+  </Grid>
 );

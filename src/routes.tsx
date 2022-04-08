@@ -27,15 +27,14 @@ export function AppRoutes() {
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Home />} />
         <Route
-          path="users"
+          path="/users"
           element={
             <Private>
               <UserView />
             </Private>
           }
-        >
-          <Route path=":id" element={<UserAddUpdate />} />
-        </Route>
+        ></Route>
+        <Route path="/users/:id" element={<UserAddUpdate />} />
         <Route
           path="inputs"
           element={
@@ -43,9 +42,8 @@ export function AppRoutes() {
               <InputView />
             </Private>
           }
-        >
-          <Route path=":id" element={<InputAddUpdate />} />
-        </Route>
+        ></Route>
+        <Route path="/inputs/:id" element={<InputAddUpdate />} />
         <Route
           path="products"
           element={
@@ -53,9 +51,8 @@ export function AppRoutes() {
               <ProductView />
             </Private>
           }
-        >
-          <Route path=":id" element={<ProductAddUpdate />} />
-        </Route>
+        ></Route>
+        <Route path="/products/:id" element={<ProductAddUpdate />} />
 
         <Route path="*" element={<div>Page Not Found</div>} />
       </Routes>

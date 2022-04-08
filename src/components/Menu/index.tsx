@@ -20,9 +20,11 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { OverridableComponent } from "@mui/material/OverridableComponent";
 import { SvgIconTypeMap } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/auth";
 
 const drawerWidth = 240;
 
@@ -110,6 +112,8 @@ export const Menu = ({ children, options }: IMenu) => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
+  const { logout, user_name } = useAuth();
+
   const menu: IOptions[] = [
     {
       name_page: "Home",
@@ -174,8 +178,24 @@ export const Menu = ({ children, options }: IMenu) => {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div">
+
+          <Typography variant="h5" noWrap component="div">
             {namePage}
+          </Typography>
+          <Typography variant="h6" margin="0 0 0 auto" noWrap component="div">
+            {user_name}
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={logout}
+              edge="end"
+              sx={{
+                margin: "0 0 0 auto",
+                padding: "0  0 0 15px",
+              }}
+            >
+              <LogoutIcon />
+            </IconButton>
           </Typography>
         </Toolbar>
       </AppBar>

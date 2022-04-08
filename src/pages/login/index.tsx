@@ -90,9 +90,9 @@ export function Login() {
           />
         </Grid>
         <Grid type={"container"} justifyContent={"center"}>
-          <Grid type={"item"} xs={2}>
-            <Button onClick={handleSubmit}>Logar</Button>
-          </Grid>
+          <Button xs={2} onClick={handleSubmit}>
+            Logar
+          </Button>
         </Grid>
       </div>
     </div>

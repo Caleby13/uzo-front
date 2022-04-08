@@ -1,3 +1,7 @@
+import { useParams } from "react-router-dom";
+
 export function UserAddUpdate() {
-  return <div>UserAddUpdate</div>;
+  const { id } = useParams();
+
+  return <div>{`UserAddUpdate ${id}`}</div>;
 }

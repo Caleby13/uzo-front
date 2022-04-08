@@ -6,10 +6,7 @@ import { isAuthenticated } from "../services/auth";
 
 interface IAuth {
   authenticated: boolean;
-  user: {
-    user_name: string;
-    password: string;
-  } | null;
+  user_name: string;
   login: (user_name: string, password: string) => void;
   logout: () => void;
   token: string;
@@ -18,10 +15,6 @@ interface IAuth {
 export const AuthContext = createContext({} as any);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = React.useState<{
-    user_name: string;
-    password: string;
-  } | null>(null);
   const navigate = useNavigate();
 
   const login = async (user_name: string, password: string) => {
@@ -31,7 +24,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user_name,
         password,
       });
-      setUser({ user_name, password });
 
       if (!!data?.token) {
         localStorage.setItem("token", JSON.stringify(data));
@@ -52,10 +44,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const objectToken = localStorage.getItem("token") || null;
   const token = objectToken ? JSON.parse(objectToken).token : null;
+  const user_name = objectToken ? JSON.parse(objectToken).user.user_name : null;
 
   return (
     <AuthContext.Provider
-      value={{ authenticated: isAuthenticated(), user, login, logout, token }}
+      value={{
+        authenticated: isAuthenticated(),
+        user_name,
+        login,
+        logout,
+        token,
+      }}
     >
       {children}
     </AuthContext.Provider>
@@ -63,8 +62,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 export const useAuth = () => {
-  const { authenticated, user, login, logout, token }: IAuth =
+  const { authenticated, user_name, login, logout, token }: IAuth =
     useContext(AuthContext);
 
-  return { authenticated, user, login, logout, token };
+  return { authenticated, user_name, login, logout, token };
 };

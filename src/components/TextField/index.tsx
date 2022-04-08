@@ -1,12 +1,12 @@
 import { Grid } from "../Grid";
 import { TextField as TextFieldMaterial } from "@material-ui/core";
-import { ChangeEventHandler } from "react";
+import { ChangeEventHandler, ReactElement } from "react";
 
 interface ITextField {
   placeHolder?: string;
   defaultValue?: string;
   type?: string;
-  onChange: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
+  onChange?: ChangeEventHandler<HTMLTextAreaElement | HTMLInputElement>;
   xs:
     | boolean
     | 2
@@ -25,6 +25,9 @@ interface ITextField {
     | undefined;
   label?: string;
   variant?: "filled" | "outlined" | "standard";
+  required?: boolean;
+  disabled?: boolean;
+  children?: ReactElement;
 }
 
 export const TextField = ({
@@ -34,19 +37,27 @@ export const TextField = ({
   variant = "standard",
   onChange,
   xs,
+  required = false,
   label = "",
+  disabled = false,
+  children,
 }: ITextField) => {
   return (
     <Grid type={"item"} xs={xs}>
       <TextFieldMaterial
         label={label}
+        required={required}
         variant={variant}
         fullWidth
+        value={defaultValue}
         placeholder={placeHolder}
         defaultValue={defaultValue}
         type={type}
         onChange={onChange}
-      />
+        disabled={disabled}
+      >
+        {children}
+      </TextFieldMaterial>
     </Grid>
   );
 };
