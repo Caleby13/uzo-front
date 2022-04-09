@@ -1,3 +1,4 @@
+import { Divider, IconButton } from "@material-ui/core";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import ChangeCircleIcon from "@mui/icons-material/ChangeCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -7,14 +8,13 @@ import { toast } from "react-toastify";
 import { Button } from "../../../components/Button";
 import { Grid } from "../../../components/Grid";
 import { Loading } from "../../../components/Loading";
-import { IOptions, Menu } from "../../../components/Menu";
+import { Menu } from "../../../components/Menu";
 import { TableGrid } from "../../../components/TableGrid";
 import { TextField } from "../../../components/TextField";
 import { useAuth } from "../../../hooks/auth";
 import { useHistory } from "../../../hooks/history";
 import api from "../../../services/api";
-import IconButton from "@mui/material/IconButton";
-import SearchIcon from "@mui/icons-material/Search";
+import { filter } from "../../../utils/filter";
 
 interface IInput {
   _id: string;
@@ -67,27 +67,15 @@ export function InputView() {
     },
   ];
 
+  const rows = keyword.length > 0 ? filter("name", keyword, inputs) : inputs;
+
   const history = useHistory();
-  const goBack = () => {
-    history.goBack();
-  };
 
-  const goToAddUpdate = () => {
-    history.push("5");
+  const goToUpdate = () => {
+    currentId ? history.push(currentId) : toast.error("Selecione um insumo");
   };
-
-  const handleDelete = async () => {
-    try {
-      setLoading(true);
-      const client = api(token);
-      const { data } = await client.delete(`input/${currentId}`);
-      console.log(data);
-      toast.success("Deletado com sucesso");
-    } catch (err) {
-      toast.error("Erro");
-    } finally {
-      setLoading(false);
-    }
+  const goToAdd = () => {
+    history.push("null");
   };
 
   const loadData = useCallback(async () => {
@@ -104,50 +92,50 @@ export function InputView() {
     }
   }, []);
 
+  const handleDelete = async () => {
+    try {
+      setLoading(true);
+      const client = api(token);
+      await client.delete(`input/${currentId}`);
+      toast.success("Insumo eletado com sucesso");
+    } catch (err) {
+      toast.error("Erro");
+    } finally {
+      loadData();
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadData();
   }, []);
-
-  const menu: IOptions[] = [
-    {
-      name_page: "Incluir",
-      icon: <AddCircleIcon />,
-      redirect: "/users",
-      hide: false,
-    },
-    {
-      name_page: "Alterar",
-      icon: <ChangeCircleIcon />,
-      redirect: "/inputs",
-      hide: false,
-    },
-    {
-      name_page: "Excluir",
-      icon: <DeleteIcon />,
-      redirect: "/products",
-      hide: false,
-    },
-  ];
 
   if (loading) {
     return <Loading />;
   }
   return (
     <>
-      <Menu options={menu}>
+      <Menu>
         <Grid type="container" justifyContent="flex-start">
           <TextField
-            xs={10}
+            xs={9}
             placeHolder={"Insira o nome do insumo"}
             label={"Nome do insumo"}
             onChange={(e) => setKeyword(e.target.value)}
             variant={"outlined"}
           />
-          <Button size={"large"} xs={1}>
-            <SearchIcon />
+          <Button xs={1} onClick={goToAdd}>
+            <AddCircleIcon fontSize="large" color="primary" />
+          </Button>
+          <Button xs={1} onClick={goToUpdate}>
+            <ChangeCircleIcon fontSize="large" color="primary" />
+          </Button>
+          <Button xs={1} onClick={handleDelete}>
+            <DeleteIcon fontSize="large" color="primary" />
           </Button>
         </Grid>
-        <TableGrid columns={columns} rows={inputs} onRowClick={setCurrentId} />
+        <Divider style={{ margin: "2px 0" }} />
+        <TableGrid columns={columns} rows={rows} onRowClick={setCurrentId} />
       </Menu>
     </>
   );

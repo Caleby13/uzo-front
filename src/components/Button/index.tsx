@@ -1,33 +1,32 @@
 import { ReactNode, MouseEventHandler } from "react";
-import { Button as ButtonMaterial } from "@material-ui/core";
 import { Grid } from "../Grid";
+import "./style.css";
 
 interface IButton {
   children: ReactNode;
-  color?: "default" | "inherit" | "primary" | "secondary";
-  size?: "small" | "medium" | "large";
-  variant?: "contained" | "outlined";
   onClick?: MouseEventHandler<HTMLButtonElement>;
-  xs: false | "auto" | true | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
+  xs:
+    | boolean
+    | 2
+    | 1
+    | 3
+    | 4
+    | 5
+    | 6
+    | 7
+    | 8
+    | 9
+    | 10
+    | "auto"
+    | 11
+    | 12
+    | undefined;
 }
 
-export const Button = ({
-  children,
-  color = "primary",
-  onClick,
-  variant = "outlined",
-  size = "large",
-  xs,
-}: IButton) => (
-  <Grid type={"item"} xs={xs}>
-    <ButtonMaterial
-      size={size}
-      fullWidth
-      color={color}
-      onClick={onClick}
-      variant={variant}
-    >
+export const Button = ({ children, onClick, xs }: IButton) => (
+  <Grid type="item" xs={xs}>
+    <button id="custom" onClick={onClick}>
       {children}
-    </ButtonMaterial>
+    </button>
   </Grid>
 );

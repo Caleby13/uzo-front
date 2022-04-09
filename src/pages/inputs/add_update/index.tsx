@@ -9,6 +9,8 @@ import { useAuth } from "../../../hooks/auth";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Loading } from "../../../components/Loading";
+import { Button } from "../../../components/Button";
+import { useHistory } from "../../../hooks/history";
 
 interface IInputAddUpdate {
   name: string;
@@ -34,15 +36,23 @@ export function InputAddUpdate() {
 
   const { token } = useAuth();
 
+  const history = useHistory();
+  const goBack = () => {
+    history.goBack();
+  };
+
   const handleAddOrUpdate = async () => {
     try {
       setLoading(true);
       const client = api(token);
       if (id === "null") {
         await client.post("/input", input);
+        toast.success("Insumo cadastrado com sucesso");
       } else {
         await client.put(`/input/${id}`, input);
+        toast.success("Insumo atualizado com sucesso");
       }
+      goBack();
     } catch (err: any) {
       const message = err?.response?.data?.error || "Erro";
       toast.error(message);
@@ -51,29 +61,11 @@ export function InputAddUpdate() {
     }
   };
 
-  const menu: IOptions[] = [
-    {
-      name_page: "Confirmar",
-      icon: <CheckIcon />,
-      redirect: "/inputs",
-      hide: false,
-      onClick: handleAddOrUpdate,
-    },
-    {
-      name_page: "Cancelar",
-      icon: <CancelIcon />,
-      redirect: "/inputs",
-      hide: false,
-    },
-  ];
-
-  console.log(input);
-
   if (loading) {
     return <Loading />;
   }
   return (
-    <Menu options={menu}>
+    <Menu>
       <Grid type="container" justifyContent="flex-start">
         <TextField
           defaultValue={`${input.name}`}
@@ -144,6 +136,16 @@ export function InputAddUpdate() {
           }
         />
       </Grid>
+      <div style={{ bottom: "10px" }}>
+        <Grid type="container">
+          <Button xs={2} onClick={handleAddOrUpdate}>
+            <CheckIcon fontSize="large" color="primary" />
+          </Button>
+          <Button xs={2} onClick={goBack}>
+            <CancelIcon fontSize="large" color="primary" />
+          </Button>
+        </Grid>
+      </div>
     </Menu>
   );
 }

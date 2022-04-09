@@ -90,7 +90,7 @@ export function Login() {
           />
         </Grid>
         <Grid type={"container"} justifyContent={"center"}>
-          <Button xs={2} onClick={handleSubmit}>
+          <Button xs={3} onClick={handleSubmit}>
             Logar
           </Button>
         </Grid>

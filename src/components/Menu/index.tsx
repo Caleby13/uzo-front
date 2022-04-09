@@ -114,7 +114,7 @@ export const Menu = ({ children, options }: IMenu) => {
 
   const { logout, user_name } = useAuth();
 
-  const menu: IOptions[] = [
+  const menus: IOptions[] = [
     {
       name_page: "Home",
       icon: <AccountCircleIcon />,
@@ -141,7 +141,7 @@ export const Menu = ({ children, options }: IMenu) => {
     },
   ];
 
-  const [namePage, setNamePage] = React.useState(menu[0].name_page);
+  const [namePage, setNamePage] = React.useState(menus[0].name_page);
 
   const navigate = useNavigate();
 
@@ -155,10 +155,6 @@ export const Menu = ({ children, options }: IMenu) => {
 
   const handleDrawerClose = () => {
     setOpen(false);
-  };
-
-  const currentPage = (index: number) => {
-    setNamePage(menu[index].name_page);
   };
 
   return (
@@ -211,12 +207,12 @@ export const Menu = ({ children, options }: IMenu) => {
         </DrawerHeader>
         <Divider />
         <List>
-          {menu.map(
+          {menus.map(
             (menu, index) =>
               !menu.hide && (
                 <ListItemButton
                   onClick={() => {
-                    currentPage(index);
+                    setNamePage(menu.name_page);
                     goTo(menu.redirect);
                   }}
                   key={menu.name_page}
