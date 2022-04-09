@@ -25,7 +25,14 @@ export function AppRoutes() {
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={
+            <Private>
+              <Home />
+            </Private>
+          }
+        />
         <Route
           path="/users"
           element={
@@ -34,7 +41,14 @@ export function AppRoutes() {
             </Private>
           }
         ></Route>
-        <Route path="/users/:id" element={<UserAddUpdate />} />
+        <Route
+          path="/users/:id"
+          element={
+            <Private>
+              <UserAddUpdate />
+            </Private>
+          }
+        />
         <Route
           path="inputs"
           element={
@@ -43,7 +57,14 @@ export function AppRoutes() {
             </Private>
           }
         ></Route>
-        <Route path="/inputs/:id" element={<InputAddUpdate />} />
+        <Route
+          path="/inputs/:id"
+          element={
+            <Private>
+              <InputAddUpdate />
+            </Private>
+          }
+        />
         <Route
           path="products"
           element={
@@ -52,7 +73,14 @@ export function AppRoutes() {
             </Private>
           }
         ></Route>
-        <Route path="/products/:id" element={<ProductAddUpdate />} />
+        <Route
+          path="/products/:id"
+          element={
+            <Private>
+              <ProductAddUpdate />
+            </Private>
+          }
+        />
 
         <Route path="*" element={<div>Page Not Found</div>} />
       </Routes>
