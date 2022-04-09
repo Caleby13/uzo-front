@@ -54,6 +54,7 @@ export const TextField = ({
         defaultValue={defaultValue}
         type={type}
         onChange={onChange}
+        color={"primary"}
         disabled={disabled}
       >
         {children}

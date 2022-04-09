@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoginIcon from "@mui/icons-material/Login";
 import { toast } from "react-toastify";
 import Autocomplete from "../../components/Autocomplete";
 import { Button } from "../../components/Button";
@@ -91,7 +92,7 @@ export function Login() {
         </Grid>
         <Grid type={"container"} justifyContent={"center"}>
           <Button xs={3} onClick={handleSubmit}>
-            Logar
+            <LoginIcon color="primary" fontSize="large" />
           </Button>
         </Grid>
       </div>
