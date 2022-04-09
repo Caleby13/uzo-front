@@ -83,7 +83,6 @@ export function InputView() {
       setLoading(true);
       const client = api(token);
       const { data } = await client.get("/input");
-      console.log(data);
       setInputs(data);
     } catch (error) {
       console.log(error);
@@ -135,7 +134,12 @@ export function InputView() {
           </Button>
         </Grid>
         <Divider style={{ margin: "2px 0" }} />
-        <TableGrid columns={columns} rows={rows} onRowClick={setCurrentId} />
+        <TableGrid
+          columns={columns}
+          rows={rows}
+          onRowClick={setCurrentId}
+          onRowDoubleClick={goToUpdate}
+        />
       </Menu>
     </>
   );

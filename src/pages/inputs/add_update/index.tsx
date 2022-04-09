@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Grid } from "../../../components/Grid";
 import { IOptions, Menu } from "../../../components/Menu";
 import { TextField } from "../../../components/TextField";
@@ -41,6 +41,28 @@ export function InputAddUpdate() {
     history.goBack();
   };
 
+  const loadData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const client = api(token);
+      const { data } = await client.get<IInputAddUpdate>(`/input/${id}`);
+      if (!!data) {
+        setInput({
+          amount: data.amount,
+          name: data.name,
+          provider: data.provider,
+          unit_cost: data.unit_cost,
+          value_package: data.value_package,
+          yield: data.yield,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const handleAddOrUpdate = async () => {
     try {
       setLoading(true);
@@ -60,6 +82,10 @@ export function InputAddUpdate() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   if (loading) {
     return <Loading />;
