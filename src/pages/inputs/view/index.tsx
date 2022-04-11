@@ -114,7 +114,7 @@ export function InputView() {
   }
   return (
     <>
-      <Menu>
+      <Menu namePage="Insumos">
         <Grid type="container" justifyContent="flex-start">
           <TextField
             xs={9}

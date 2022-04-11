@@ -166,7 +166,7 @@ export function ProductView() {
   }
   return (
     <>
-      <Menu>
+      <Menu namePage="Produtos">
         <Grid type="container" justifyContent="flex-start">
           <TextField
             xs={9}

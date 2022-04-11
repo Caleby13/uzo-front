@@ -93,7 +93,7 @@ export function UserView() {
   }
   return (
     <>
-      <Menu>
+      <Menu namePage="Usuários">
         <Grid type="container" justifyContent="flex-start">
           <TextField
             xs={9}

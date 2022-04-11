@@ -105,10 +105,11 @@ export interface IOptions {
 }
 interface IMenu {
   children: React.ReactNode;
+  namePage: string;
   options?: IOptions[];
 }
 
-export const Menu = ({ children, options }: IMenu) => {
+export const Menu = ({ children, options, namePage }: IMenu) => {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
 
@@ -140,8 +141,6 @@ export const Menu = ({ children, options }: IMenu) => {
       hide: false,
     },
   ];
-
-  const [namePage, setNamePage] = React.useState(menus[0].name_page);
 
   const navigate = useNavigate();
 
@@ -212,7 +211,6 @@ export const Menu = ({ children, options }: IMenu) => {
               !menu.hide && (
                 <ListItemButton
                   onClick={() => {
-                    setNamePage(menu.name_page);
                     goTo(menu.redirect);
                   }}
                   key={menu.name_page}

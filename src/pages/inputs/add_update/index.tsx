@@ -91,7 +91,11 @@ export function InputAddUpdate() {
     return <Loading />;
   }
   return (
-    <Menu>
+    <Menu
+      namePage={
+        id === "null" ? "Cadastro de insumo" : `Alterar insumo ${input.name}`
+      }
+    >
       <Grid type="container" justifyContent="flex-start">
         <TextField
           defaultValue={`${input.name}`}

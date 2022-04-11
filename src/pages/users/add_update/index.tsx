@@ -82,7 +82,13 @@ export function UserAddUpdate() {
     return <Loading />;
   }
   return (
-    <Menu>
+    <Menu
+      namePage={
+        id === "null"
+          ? "Cadastro de usuário"
+          : `Alterar usuário ${user.user_name}`
+      }
+    >
       <Grid type="container" justifyContent="flex-start">
         <TextField
           defaultValue={`${user.name}`}
