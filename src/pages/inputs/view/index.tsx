@@ -57,6 +57,8 @@ export function InputView() {
       type: "number",
       flex: 0.1,
     },
+    { field: "provider", headerName: "Fornecedor", flex: 0.2 },
+
     {
       field: "createdAt",
       hide: true,
