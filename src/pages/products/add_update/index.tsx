@@ -1,16 +1,22 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Grid } from "../../../components/Grid";
-import { IOptions, Menu } from "../../../components/Menu";
-import { TextField } from "../../../components/TextField";
-import CheckIcon from "@mui/icons-material/Check";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
-import api from "../../../services/api";
-import { useAuth } from "../../../hooks/auth";
+import CheckIcon from "@mui/icons-material/Check";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { Divider } from "@mui/material";
+import { GridColDef } from "@mui/x-data-grid";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Loading } from "../../../components/Loading";
+import Autocomplete from "../../../components/Autocomplete";
 import { Button } from "../../../components/Button";
+import { Grid } from "../../../components/Grid";
+import { Loading } from "../../../components/Loading";
+import { Menu } from "../../../components/Menu";
+import { TableGrid } from "../../../components/TableGrid";
+import { TextField } from "../../../components/TextField";
+import { useAuth } from "../../../hooks/auth";
 import { useHistory } from "../../../hooks/history";
+import api from "../../../services/api";
 
 interface IItem {
   input: string;
@@ -30,10 +36,28 @@ interface IProductAddUpdate {
   total_cost: number;
   sale_value: number;
   profit: number;
-  items?: IItem[];
+  items: IItem[];
+}
+
+interface IInput {
+  _id: string;
+  name: string;
+  amount: number;
+  yield: number;
+  value_package: number;
+  unit_cost: number;
+  createdAt: string;
+  __v: number;
 }
 
 export function ProductAddUpdate() {
+  const [item, setItem] = useState<IItem>({
+    input: "",
+    description: "",
+    amount: 0,
+    unit_cost: 0,
+    total_cost: 0,
+  });
   const [product, setProduct] = useState<IProductAddUpdate>({
     name: "",
     customer_name: "",
@@ -44,8 +68,36 @@ export function ProductAddUpdate() {
     total_cost: 0,
     sale_value: 0,
     profit: 0,
+    items: [],
   });
+
+  const [inputs, setInputs] = useState<IInput[]>([]);
+  const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+
+  const columns: GridColDef[] = [
+    { field: "_id", headerName: "ID", hide: true, flex: 0.06 },
+    { field: "input", headerName: "Nome", flex: 0.3 },
+    { field: "description", headerName: "Descrição", flex: 0.1 },
+    {
+      field: "amount",
+      headerName: "Quantidade",
+      type: "number",
+      flex: 0.1,
+    },
+    {
+      field: "unit_cost",
+      headerName: "Valor Unitario",
+      type: "number",
+      flex: 0.1,
+    },
+    {
+      field: "total_cost",
+      headerName: "Valor Total",
+      type: "number",
+      flex: 0.1,
+    },
+  ];
 
   const { id } = useParams();
 
@@ -56,9 +108,8 @@ export function ProductAddUpdate() {
     history.goBack();
   };
 
-  const loadData = useCallback(async () => {
+  const loadProduct = useCallback(async () => {
     try {
-      setLoading(true);
       const client = api(token);
       const { data } = await client.get<IProductAddUpdate>(`/product/${id}`);
       if (!!data) {
@@ -76,10 +127,22 @@ export function ProductAddUpdate() {
         });
       }
     } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+      toast.error("Erro ao carregar o produto");
     }
+  }, []);
+
+  const loadInputs = useCallback(async () => {
+    try {
+      const client = api(token);
+      const { data } = await client.get("/input");
+      setInputs(data);
+    } catch (error) {
+      toast.error("Erro ao carregar os insumos");
+    }
+  }, []);
+
+  const loadData = useCallback(async () => {
+    await Promise.all([loadProduct(), loadInputs()]);
   }, []);
 
   const handleAddOrUpdate = async () => {
@@ -100,6 +163,21 @@ export function ProductAddUpdate() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleClearItem = () => {
+    setItem({
+      input: "",
+      description: "",
+      amount: 0,
+      unit_cost: 0,
+      total_cost: 0,
+    });
+  };
+
+  const handleAddItem = () => {
+    product.items.push(item);
+    handleClearItem();
   };
 
   useEffect(() => {
@@ -131,7 +209,7 @@ export function ProductAddUpdate() {
           defaultValue={`${product.customer_name}`}
           label="Cliente"
           placeHolder="Cliente"
-          xs={6}
+          xs={4}
           onChange={(e) =>
             setProduct((prev) => ({ ...prev, customer_name: e.target.value }))
           }
@@ -141,7 +219,7 @@ export function ProductAddUpdate() {
           label="Serviço"
           placeHolder="Serviço"
           type="number"
-          xs={6}
+          xs={2}
           onChange={(e) =>
             setProduct((prev) => ({
               ...prev,
@@ -165,7 +243,7 @@ export function ProductAddUpdate() {
           label="Arte"
           placeHolder="Arte"
           type="number"
-          xs={6}
+          xs={2}
           onChange={(e) =>
             setProduct((prev) => ({
               ...prev,
@@ -189,7 +267,7 @@ export function ProductAddUpdate() {
           label="Outros"
           placeHolder="Outros"
           type="number"
-          xs={6}
+          xs={2}
           onChange={(e) =>
             setProduct((prev) => ({
               ...prev,
@@ -213,7 +291,7 @@ export function ProductAddUpdate() {
           label="Custo dos insumos"
           placeHolder="Custo dos insumos"
           type="number"
-          xs={6}
+          xs={2}
           disabled
         />
         <TextField
@@ -221,7 +299,7 @@ export function ProductAddUpdate() {
           label="Custo total"
           placeHolder="Custo total"
           type="number"
-          xs={6}
+          xs={2}
           disabled
         />
         <TextField
@@ -229,7 +307,7 @@ export function ProductAddUpdate() {
           label="Valor de venda"
           placeHolder="Valor de venda"
           type="number"
-          xs={6}
+          xs={2}
           onChange={(e) =>
             setProduct((prev) => ({
               ...prev,
@@ -243,7 +321,7 @@ export function ProductAddUpdate() {
           label="Lucro"
           placeHolder="Lucro"
           type="number"
-          xs={6}
+          xs={2}
           disabled
         />
       </Grid>
@@ -257,6 +335,73 @@ export function ProductAddUpdate() {
           </Button>
         </Grid>
       </div>
+      <div style={{ margin: "10px auto" }}>
+        <Divider />
+      </div>
+      <Grid type="container" justifyContent="flex-start">
+        <Autocomplete
+          label={"Insumo"}
+          placeholder={"Insira o nome do insumo"}
+          options={inputs.map((input) => ({
+            id: input._id,
+            label: input.name,
+            unit_cost: input.unit_cost,
+          }))}
+          xs={4}
+          value={input}
+          onChange={(event, newValue) => {
+            setInput(`${newValue.label}`);
+            setItem((prev) => ({ ...prev, unit_cost: newValue.unit_cost }));
+          }}
+        />
+        <TextField
+          defaultValue={`${item.description}`}
+          label="Descrição"
+          placeHolder="Descrição"
+          xs={3}
+          onChange={(e) =>
+            setItem((prev) => ({ ...prev, description: e.target.value }))
+          }
+        />
+        <TextField
+          defaultValue={`${item.amount}`}
+          label="Quantidade"
+          placeHolder="Quantidade"
+          type="number"
+          xs={1}
+          onChange={(e) =>
+            setItem((prev) => ({
+              ...prev,
+              amount: Number(e.target.value),
+              total_cost: Number(e.target.value) * prev.unit_cost,
+            }))
+          }
+        />
+        <TextField
+          defaultValue={`${item.unit_cost}`}
+          label="Valor unitario"
+          placeHolder="Valor unitario"
+          type="number"
+          xs={1}
+          disabled
+        />
+        <TextField
+          defaultValue={`${item.total_cost}`}
+          label="Valor total"
+          placeHolder="Valor total"
+          type="number"
+          xs={1}
+          disabled
+        />
+        <Button xs={1} onClick={handleAddItem}>
+          <AddCircleIcon fontSize="large" color="primary" />
+        </Button>
+
+        <Button xs={1} onClick={handleClearItem}>
+          <DeleteIcon fontSize="large" color="primary" />
+        </Button>
+      </Grid>
+      <TableGrid columns={columns} rows={product.items} />
     </Menu>
   );
 }

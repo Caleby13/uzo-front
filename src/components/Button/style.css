@@ -7,6 +7,7 @@
         border-radius: 5px;
         margin: 0 auto;
         cursor: pointer;
+        color: #1976D2;
       }
 #custom:hover{
     background-color: #F5F5F5;
