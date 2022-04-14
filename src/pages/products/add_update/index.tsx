@@ -2,6 +2,7 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import CheckIcon from "@mui/icons-material/Check";
 import DeleteIcon from "@mui/icons-material/Delete";
+import BackspaceIcon from "@mui/icons-material/Backspace";
 import { Divider } from "@mui/material";
 import { GridColDef } from "@mui/x-data-grid";
 import { useCallback, useEffect, useState } from "react";
@@ -19,6 +20,16 @@ import { useHistory } from "../../../hooks/history";
 import api from "../../../services/api";
 
 interface IItem {
+  _id: string;
+  input?: IInput;
+  description: string;
+  amount: number;
+  unit_cost: number;
+  total_cost: number;
+}
+
+interface IItemAddUpdate {
+  _id: string;
   input: string;
   description: string;
   amount: number;
@@ -42,7 +53,7 @@ interface IProductAddUpdate {
 interface IInput {
   _id: string;
   name: string;
-  amount: number;
+  amount: string;
   yield: number;
   value_package: number;
   unit_cost: number;
@@ -52,12 +63,13 @@ interface IInput {
 
 export function ProductAddUpdate() {
   const [item, setItem] = useState<IItem>({
-    input: "",
+    _id: "",
     description: "",
-    amount: 0,
+    amount: 1,
     unit_cost: 0,
     total_cost: 0,
   });
+
   const [product, setProduct] = useState<IProductAddUpdate>({
     name: "",
     customer_name: "",
@@ -71,13 +83,15 @@ export function ProductAddUpdate() {
     items: [],
   });
 
+  const [items, setItems] = useState<IItem[]>([]);
+
   const [inputs, setInputs] = useState<IInput[]>([]);
   const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const columns: GridColDef[] = [
     { field: "_id", headerName: "ID", hide: true, flex: 0.06 },
-    { field: "input", headerName: "Nome", flex: 0.3 },
+    { field: "name", headerName: "Nome", flex: 0.3 },
     { field: "description", headerName: "Descrição", flex: 0.1 },
     {
       field: "amount",
@@ -123,8 +137,10 @@ export function ProductAddUpdate() {
           total_cost: data.total_cost,
           sale_value: data.sale_value,
           profit: data.profit,
-          items: data.items,
+          items: [],
         });
+
+        setItems(data.items);
       }
     } catch (error) {
       toast.error("Erro ao carregar o produto");
@@ -149,11 +165,23 @@ export function ProductAddUpdate() {
     try {
       setLoading(true);
       const client = api(token);
+
+      const newProduct = {
+        ...product,
+        items: items.map((item) => ({
+          input: item.input?._id,
+          description: item.description,
+          amount: item.amount,
+          unit_cost: item.unit_cost,
+          total_cost: item.total_cost,
+        })),
+      };
+
       if (id === "null") {
-        await client.post("/product", product);
+        await client.post("/product", newProduct);
         toast.success("Produto cadastrado com sucesso");
       } else {
-        await client.put(`/product/${id}`, product);
+        await client.put(`/product/${id}`, newProduct);
         toast.success("Produto atualizado com sucesso");
       }
       goBack();
@@ -165,24 +193,47 @@ export function ProductAddUpdate() {
     }
   };
 
+  const rows = items.map((item) => ({
+    _id: item._id,
+    name: item.input?.name,
+    description: item.description,
+    amount: item.amount,
+    unit_cost: item.unit_cost,
+    total_cost: item.total_cost,
+  }));
+
   const handleClearItem = () => {
     setItem({
-      input: "",
+      _id: `${items.length}`,
+      input: inputs.find((item) => item.name === input),
       description: "",
-      amount: 0,
+      amount: 1,
       unit_cost: 0,
       total_cost: 0,
     });
+
+    setInput("");
   };
 
   const handleAddItem = () => {
-    product.items.push(item);
+    setItems((prev) => [...prev, item]);
+
+    const inputs_cost = items.reduce((total, ac) => {
+      return total + ac.total_cost;
+    }, 0);
+    setProduct((prev) => ({
+      ...prev,
+      inputs_cost,
+    }));
     handleClearItem();
   };
 
   useEffect(() => {
     loadData();
   }, []);
+
+  console.log(item);
+  console.log(items);
 
   if (loading) {
     return <Loading />;
@@ -346,12 +397,17 @@ export function ProductAddUpdate() {
             id: input._id,
             label: input.name,
             unit_cost: input.unit_cost,
+            amount: input.amount,
           }))}
           xs={4}
           value={input}
           onChange={(event, newValue) => {
             setInput(`${newValue.label}`);
-            setItem((prev) => ({ ...prev, unit_cost: newValue.unit_cost }));
+            setItem((prev) => ({
+              ...prev,
+              unit_cost: newValue.unit_cost,
+              total_cost: item.amount * newValue.unit_cost,
+            }));
           }}
         />
         <TextField
@@ -398,10 +454,10 @@ export function ProductAddUpdate() {
         </Button>
 
         <Button xs={1} onClick={handleClearItem}>
-          <DeleteIcon fontSize="large" color="primary" />
+          <BackspaceIcon fontSize="large" color="primary" />
         </Button>
       </Grid>
-      <TableGrid columns={columns} rows={product.items} />
+      <TableGrid columns={columns} rows={rows} />
     </Menu>
   );
 }
