@@ -207,9 +207,21 @@ export function ProductAddUpdate() {
       unit_cost: 0,
       total_cost: 0,
     });
+
+    setCurrentId(null);
+  };
+
+  const handleChangeItem = () => {
+    const index = items.findIndex((item) => item._id === currentId);
+    const itemsCopy = [...items];
+    setItem(itemsCopy[index]);
   };
 
   const handleDeleteItem = () => {
+    if (currentId === null) {
+      toast.error("Selecione um insumo para excluir");
+      return;
+    }
     const index = items.findIndex((item) => item._id === currentId);
     const itemsCopy = [...items];
     itemsCopy.splice(index, 1);
@@ -226,22 +238,42 @@ export function ProductAddUpdate() {
         prev.sale_value - (prev.labor + prev.art + prev.others + inputs_cost),
       total_cost: prev.labor + prev.art + prev.others + inputs_cost,
     }));
+    setCurrentId(null);
   };
 
   const handleAddItem = () => {
-    setItems((prev) => [...prev, item]);
+    const index = items.findIndex((item) => item._id === currentId);
+    if (index >= 0) {
+      const itemsCopy = [...items];
+      itemsCopy[index] = item;
+      setItems(itemsCopy);
 
-    const inputs_cost = [...items, item].reduce((total, ac) => {
-      return total + ac.total_cost;
-    }, 0);
+      const inputs_cost = itemsCopy.reduce((total, ac) => {
+        return total + ac.total_cost;
+      }, 0);
 
-    setProduct((prev) => ({
-      ...prev,
-      inputs_cost,
-      profit:
-        prev.sale_value - (prev.labor + prev.art + prev.others + inputs_cost),
-      total_cost: prev.labor + prev.art + prev.others + inputs_cost,
-    }));
+      setProduct((prev) => ({
+        ...prev,
+        inputs_cost,
+        profit:
+          prev.sale_value - (prev.labor + prev.art + prev.others + inputs_cost),
+        total_cost: prev.labor + prev.art + prev.others + inputs_cost,
+      }));
+    } else {
+      setItems((prev) => [...prev, item]);
+
+      const inputs_cost = [...items, item].reduce((total, ac) => {
+        return total + ac.total_cost;
+      }, 0);
+
+      setProduct((prev) => ({
+        ...prev,
+        inputs_cost,
+        profit:
+          prev.sale_value - (prev.labor + prev.art + prev.others + inputs_cost),
+        total_cost: prev.labor + prev.art + prev.others + inputs_cost,
+      }));
+    }
 
     handleClearItem();
   };
@@ -475,7 +507,12 @@ export function ProductAddUpdate() {
           <DeleteIcon fontSize="medium" color="primary" />
         </Button>
       </Grid>
-      <TableGrid columns={columns} rows={rows} onRowClick={setCurrentId} />
+      <TableGrid
+        columns={columns}
+        rows={rows}
+        onRowClick={setCurrentId}
+        onRowDoubleClick={handleChangeItem}
+      />
     </Menu>
   );
 }
