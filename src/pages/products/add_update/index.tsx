@@ -58,7 +58,7 @@ interface IInput {
 
 export function ProductAddUpdate() {
   const [item, setItem] = useState<IItem>({
-    _id: "",
+    _id: "0",
     description: "",
     amount: 1,
     unit_cost: 0,
@@ -207,6 +207,25 @@ export function ProductAddUpdate() {
       unit_cost: 0,
       total_cost: 0,
     });
+  };
+
+  const handleDeleteItem = () => {
+    const index = items.findIndex((item) => item._id === currentId);
+    const itemsCopy = [...items];
+    itemsCopy.splice(index, 1);
+    setItems(itemsCopy);
+
+    const inputs_cost = itemsCopy.reduce((total, ac) => {
+      return total + ac.total_cost;
+    }, 0);
+
+    setProduct((prev) => ({
+      ...prev,
+      inputs_cost,
+      profit:
+        prev.sale_value - (prev.labor + prev.art + prev.others + inputs_cost),
+      total_cost: prev.labor + prev.art + prev.others + inputs_cost,
+    }));
   };
 
   const handleAddItem = () => {
@@ -411,7 +430,7 @@ export function ProductAddUpdate() {
           defaultValue={`${item.description}`}
           label="Descrição"
           placeHolder="Descrição"
-          xs={3}
+          xs={2}
           onChange={(e) =>
             setItem((prev) => ({ ...prev, description: e.target.value }))
           }
@@ -447,11 +466,13 @@ export function ProductAddUpdate() {
           disabled
         />
         <Button xs={1} onClick={handleAddItem}>
-          <AddCircleIcon fontSize="large" color="primary" />
+          <AddCircleIcon fontSize="medium" color="primary" />
         </Button>
-
         <Button xs={1} onClick={handleClearItem}>
-          <BackspaceIcon fontSize="large" color="primary" />
+          <BackspaceIcon fontSize="medium" color="primary" />
+        </Button>
+        <Button xs={1} onClick={handleDeleteItem}>
+          <DeleteIcon fontSize="medium" color="primary" />
         </Button>
       </Grid>
       <TableGrid columns={columns} rows={rows} onRowClick={setCurrentId} />
