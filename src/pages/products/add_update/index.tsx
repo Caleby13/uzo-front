@@ -209,13 +209,18 @@ export function ProductAddUpdate() {
   const handleAddItem = () => {
     setItems((prev) => [...prev, item]);
 
-    const inputs_cost = items.reduce((total, ac) => {
+    const inputs_cost = [...items, item].reduce((total, ac) => {
       return total + ac.total_cost;
     }, 0);
+
     setProduct((prev) => ({
       ...prev,
       inputs_cost,
+      profit:
+        prev.sale_value - (prev.labor + prev.art + prev.others + inputs_cost),
+      total_cost: prev.labor + prev.art + prev.others + inputs_cost,
     }));
+
     handleClearItem();
   };
 
@@ -257,7 +262,7 @@ export function ProductAddUpdate() {
           }
         />
         <TextField
-          defaultValue={`${product.labor}`}
+          defaultValue={product.labor.toFixed(2)}
           label="Serviço"
           placeHolder="Serviço"
           type="number"
@@ -281,7 +286,7 @@ export function ProductAddUpdate() {
           }
         />
         <TextField
-          defaultValue={`${product.art}`}
+          defaultValue={product.art.toFixed(2)}
           label="Arte"
           placeHolder="Arte"
           type="number"
@@ -305,7 +310,7 @@ export function ProductAddUpdate() {
           }
         />
         <TextField
-          defaultValue={`${product.others}`}
+          defaultValue={product.others.toFixed(2)}
           label="Outros"
           placeHolder="Outros"
           type="number"
@@ -329,7 +334,7 @@ export function ProductAddUpdate() {
           }
         />
         <TextField
-          defaultValue={`${product.inputs_cost}`}
+          defaultValue={product.inputs_cost.toFixed(2)}
           label="Custo dos insumos"
           placeHolder="Custo dos insumos"
           type="number"
@@ -337,7 +342,7 @@ export function ProductAddUpdate() {
           disabled
         />
         <TextField
-          defaultValue={`${product.total_cost}`}
+          defaultValue={product.total_cost.toFixed(2)}
           label="Custo total"
           placeHolder="Custo total"
           type="number"
@@ -345,7 +350,7 @@ export function ProductAddUpdate() {
           disabled
         />
         <TextField
-          defaultValue={`${product.sale_value}`}
+          defaultValue={product.sale_value.toFixed(2)}
           label="Valor de venda"
           placeHolder="Valor de venda"
           type="number"
@@ -359,7 +364,7 @@ export function ProductAddUpdate() {
           }
         />
         <TextField
-          defaultValue={`${product.profit}`}
+          defaultValue={product.profit.toFixed(2)}
           label="Lucro"
           placeHolder="Lucro"
           type="number"
@@ -414,7 +419,7 @@ export function ProductAddUpdate() {
           }
         />
         <TextField
-          defaultValue={`${item.amount}`}
+          defaultValue={item.amount.toFixed(3)}
           label="Quantidade"
           placeHolder="Quantidade"
           type="number"
@@ -428,7 +433,7 @@ export function ProductAddUpdate() {
           }
         />
         <TextField
-          defaultValue={`${item.unit_cost}`}
+          defaultValue={item.unit_cost.toFixed(2)}
           label="Valor unitario"
           placeHolder="Valor unitario"
           type="number"
@@ -436,7 +441,7 @@ export function ProductAddUpdate() {
           disabled
         />
         <TextField
-          defaultValue={`${item.total_cost}`}
+          defaultValue={item.total_cost.toFixed(2)}
           label="Valor total"
           placeHolder="Valor total"
           type="number"
