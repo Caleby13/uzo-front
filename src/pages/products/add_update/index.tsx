@@ -53,12 +53,7 @@ interface IProductAddUpdate {
 interface IInput {
   _id: string;
   name: string;
-  amount: string;
-  yield: number;
-  value_package: number;
   unit_cost: number;
-  createdAt: string;
-  __v: number;
 }
 
 export function ProductAddUpdate() {
@@ -86,7 +81,6 @@ export function ProductAddUpdate() {
   const [items, setItems] = useState<IItem[]>([]);
 
   const [inputs, setInputs] = useState<IInput[]>([]);
-  const [input, setInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const columns: GridColDef[] = [
@@ -205,14 +199,11 @@ export function ProductAddUpdate() {
   const handleClearItem = () => {
     setItem({
       _id: `${items.length}`,
-      input: inputs.find((item) => item.name === input),
       description: "",
       amount: 1,
       unit_cost: 0,
       total_cost: 0,
     });
-
-    setInput("");
   };
 
   const handleAddItem = () => {
@@ -397,14 +388,17 @@ export function ProductAddUpdate() {
             id: input._id,
             label: input.name,
             unit_cost: input.unit_cost,
-            amount: input.amount,
           }))}
           xs={4}
-          value={input}
+          value={item.input?.name || ""}
           onChange={(event, newValue) => {
-            setInput(`${newValue.label}`);
             setItem((prev) => ({
               ...prev,
+              input: {
+                _id: newValue.id,
+                name: newValue.label,
+                unit_cost: newValue.unit_cost,
+              },
               unit_cost: newValue.unit_cost,
               total_cost: item.amount * newValue.unit_cost,
             }));
