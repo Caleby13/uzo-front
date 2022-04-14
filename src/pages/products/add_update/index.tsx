@@ -82,6 +82,7 @@ export function ProductAddUpdate() {
 
   const [inputs, setInputs] = useState<IInput[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [currentId, setCurrentId] = useState(null);
 
   const columns: GridColDef[] = [
     { field: "_id", headerName: "ID", hide: true, flex: 0.06 },
@@ -117,27 +118,29 @@ export function ProductAddUpdate() {
   };
 
   const loadProduct = useCallback(async () => {
-    try {
-      const client = api(token);
-      const { data } = await client.get<IProductAddUpdate>(`/product/${id}`);
-      if (!!data) {
-        setProduct({
-          name: data.name,
-          customer_name: data.customer_name,
-          inputs_cost: data.inputs_cost,
-          labor: data.labor,
-          art: data.art,
-          others: data.others,
-          total_cost: data.total_cost,
-          sale_value: data.sale_value,
-          profit: data.profit,
-          items: [],
-        });
+    if (id !== "null") {
+      try {
+        const client = api(token);
+        const { data } = await client.get<IProductAddUpdate>(`/product/${id}`);
+        if (!!data) {
+          setProduct({
+            name: data.name,
+            customer_name: data.customer_name,
+            inputs_cost: data.inputs_cost,
+            labor: data.labor,
+            art: data.art,
+            others: data.others,
+            total_cost: data.total_cost,
+            sale_value: data.sale_value,
+            profit: data.profit,
+            items: [],
+          });
 
-        setItems(data.items);
+          setItems(data.items);
+        }
+      } catch (error) {
+        toast.error("Erro ao carregar o produto");
       }
-    } catch (error) {
-      toast.error("Erro ao carregar o produto");
     }
   }, []);
 
@@ -228,9 +231,6 @@ export function ProductAddUpdate() {
     loadData();
   }, []);
 
-  console.log(item);
-  console.log(items);
-
   if (loading) {
     return <Loading />;
   }
@@ -247,7 +247,7 @@ export function ProductAddUpdate() {
           defaultValue={`${product.name}`}
           label="Nome"
           placeHolder="Nome"
-          xs={6}
+          xs={5}
           onChange={(e) =>
             setProduct((prev) => ({ ...prev, name: e.target.value }))
           }
@@ -256,7 +256,7 @@ export function ProductAddUpdate() {
           defaultValue={`${product.customer_name}`}
           label="Cliente"
           placeHolder="Cliente"
-          xs={4}
+          xs={3}
           onChange={(e) =>
             setProduct((prev) => ({ ...prev, customer_name: e.target.value }))
           }
@@ -371,18 +371,16 @@ export function ProductAddUpdate() {
           xs={2}
           disabled
         />
+
+        <Button xs={1} onClick={handleAddOrUpdate}>
+          <CheckIcon fontSize="large" color="primary" />
+        </Button>
+        <Button xs={1} onClick={goBack}>
+          <CancelIcon fontSize="large" color="primary" />
+        </Button>
       </Grid>
-      <div style={{ bottom: "10px" }}>
-        <Grid type="container">
-          <Button xs={2} onClick={handleAddOrUpdate}>
-            <CheckIcon fontSize="large" color="primary" />
-          </Button>
-          <Button xs={2} onClick={goBack}>
-            <CancelIcon fontSize="large" color="primary" />
-          </Button>
-        </Grid>
-      </div>
-      <div style={{ margin: "10px auto" }}>
+
+      <div style={{ margin: "15px auto" }}>
         <Divider />
       </div>
       <Grid type="container" justifyContent="flex-start">
@@ -456,7 +454,7 @@ export function ProductAddUpdate() {
           <BackspaceIcon fontSize="large" color="primary" />
         </Button>
       </Grid>
-      <TableGrid columns={columns} rows={rows} />
+      <TableGrid columns={columns} rows={rows} onRowClick={setCurrentId} />
     </Menu>
   );
 }
