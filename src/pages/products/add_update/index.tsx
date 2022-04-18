@@ -201,7 +201,7 @@ export function ProductAddUpdate() {
 
   const handleClearItem = () => {
     setItem({
-      _id: `${items.length}`,
+      _id: `${items.length + 1}`,
       description: "",
       amount: 1,
       unit_cost: 0,
@@ -260,9 +260,11 @@ export function ProductAddUpdate() {
         total_cost: prev.labor + prev.art + prev.others + inputs_cost,
       }));
     } else {
-      setItems((prev) => [...prev, item]);
+      const itemsCopy = [...items];
+      itemsCopy.push(item);
+      setItems(itemsCopy);
 
-      const inputs_cost = [...items, item].reduce((total, ac) => {
+      const inputs_cost = itemsCopy.reduce((total, ac) => {
         return total + ac.total_cost;
       }, 0);
 
@@ -281,6 +283,9 @@ export function ProductAddUpdate() {
   useEffect(() => {
     loadData();
   }, []);
+
+  console.log(item);
+  console.log(items);
 
   if (loading) {
     return <Loading />;
