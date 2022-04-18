@@ -284,9 +284,6 @@ export function ProductAddUpdate() {
     loadData();
   }, []);
 
-  console.log(item);
-  console.log(items);
-
   if (loading) {
     return <Loading />;
   }
