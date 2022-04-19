@@ -15,6 +15,7 @@ import { useAuth } from "../../../hooks/auth";
 import { useHistory } from "../../../hooks/history";
 import api from "../../../services/api";
 import { filter } from "../../../utils/filter";
+import { toFixedNumber } from "../../../utils/toFixedNumber";
 
 interface IUser {
   _id: string;
@@ -62,6 +63,8 @@ export function ProductView() {
 
   const { token } = useAuth();
 
+  const formatNumber = toFixedNumber(2);
+
   const columns: GridColDef[] = [
     { field: "_id", headerName: "ID", flex: 0.06 },
     { field: "name", headerName: "Nome", flex: 0.3 },
@@ -70,42 +73,49 @@ export function ProductView() {
       field: "inputs_cost",
       headerName: "Custo dos insumos",
       type: "number",
+      valueFormatter: formatNumber,
       flex: 0.1,
     },
     {
       field: "labor",
       headerName: "Trabalho",
       type: "number",
+      valueFormatter: formatNumber,
       flex: 0.1,
     },
     {
       field: "art",
       headerName: "Arte",
       type: "number",
+      valueFormatter: formatNumber,
       flex: 0.1,
     },
     {
       field: "others",
       headerName: "Outros",
       type: "number",
+      valueFormatter: formatNumber,
       flex: 0.1,
     },
     {
       field: "total_cost",
       headerName: "Custo total",
       type: "number",
+      valueFormatter: formatNumber,
       flex: 0.1,
     },
     {
       field: "sale_value",
       headerName: "Preço de Venda",
       type: "number",
+      valueFormatter: formatNumber,
       flex: 0.1,
     },
     {
       field: "profit",
       headerName: "Lucro",
       type: "number",
+      valueFormatter: formatNumber,
       flex: 0.1,
     },
     {

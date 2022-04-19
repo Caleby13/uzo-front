@@ -15,6 +15,7 @@ import { useAuth } from "../../../hooks/auth";
 import { useHistory } from "../../../hooks/history";
 import api from "../../../services/api";
 import { filter } from "../../../utils/filter";
+import { toFixedNumber } from "../../../utils/toFixedNumber";
 
 interface IInput {
   _id: string;
@@ -35,6 +36,9 @@ export function InputView() {
 
   const { token } = useAuth();
 
+  const formatNumber2 = toFixedNumber(2);
+  const formatNumber4 = toFixedNumber(4);
+
   const columns: GridColDef[] = [
     { field: "_id", headerName: "ID", flex: 0.06 },
     { field: "name", headerName: "Nome", flex: 0.3 },
@@ -49,12 +53,14 @@ export function InputView() {
       field: "value_package",
       headerName: "Valor",
       type: "number",
+      valueFormatter: formatNumber2,
       flex: 0.1,
     },
     {
       field: "unit_cost",
       headerName: "Valor Unitario",
       type: "number",
+      valueFormatter: formatNumber4,
       flex: 0.1,
     },
     { field: "provider", headerName: "Fornecedor", flex: 0.2 },

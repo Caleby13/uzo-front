@@ -21,7 +21,7 @@ export const TableGrid = ({
   onRowDoubleClick,
 }: ITableGrid) => {
   return (
-    <div style={{ height: 400, width: "100%" }}>
+    <div style={{ height: "75vh", width: "100%" }}>
       <DataGrid
         getRowId={(e) => e._id}
         rows={rows}
