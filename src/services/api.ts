@@ -1,9 +1,8 @@
 import axios from "axios";
-import { baseURL } from "../config/environment_variables";
 
 const api = (token?: string) =>
   axios.create({
-    baseURL: baseURL ? `${baseURL}` : undefined,
+    baseURL: "https://uzoapi2.herokuapp.com",
     headers: {
       authorization: token ? `Bearer ${token}` : null,
     },
