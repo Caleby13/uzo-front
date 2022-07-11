@@ -57,6 +57,18 @@ export function UserAddUpdate() {
   const handleAddOrUpdate = async () => {
     try {
       setLoading(true);
+      if (!user.name) {
+        toast.error("Insira o nome do usuário");
+        return;
+      }
+      if (!user.user_name) {
+        toast.error("Insira o login do usuário");
+        return;
+      }
+      if (!user.password) {
+        toast.error("Insira a senha do usuário");
+        return;
+      }
       const client = api(token);
       if (id === "null") {
         await client.post("/user", user);

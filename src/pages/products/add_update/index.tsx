@@ -23,16 +23,7 @@ interface IItem {
   _id: string;
   input?: IInput;
   description: string;
-  amount: number;
-  unit_cost: number;
-  total_cost: number;
-}
-
-interface IItemAddUpdate {
-  _id: string;
-  input: string;
-  description: string;
-  amount: number;
+  amount: string;
   unit_cost: number;
   total_cost: number;
 }
@@ -43,9 +34,9 @@ interface IProductAddUpdate {
   inputs_cost: number;
   labor: number;
   art: number;
-  others: number;
+  others: string;
   total_cost: number;
-  sale_value: number;
+  sale_value: string;
   profit: number;
   items: IItem[];
 }
@@ -60,7 +51,7 @@ export function ProductAddUpdate() {
   const [item, setItem] = useState<IItem>({
     _id: "0",
     description: "",
-    amount: 1,
+    amount: "1",
     unit_cost: 0,
     total_cost: 0,
   });
@@ -71,9 +62,9 @@ export function ProductAddUpdate() {
     inputs_cost: 0,
     labor: 0,
     art: 0,
-    others: 0,
+    others: "0",
     total_cost: 0,
-    sale_value: 0,
+    sale_value: "0",
     profit: 0,
     items: [],
   });
@@ -129,9 +120,9 @@ export function ProductAddUpdate() {
             inputs_cost: data.inputs_cost,
             labor: data.labor,
             art: data.art,
-            others: data.others,
+            others: `${data.others}`,
             total_cost: data.total_cost,
-            sale_value: data.sale_value,
+            sale_value: `${data.sale_value}`,
             profit: data.profit,
             items: [],
           });
@@ -161,6 +152,15 @@ export function ProductAddUpdate() {
   const handleAddOrUpdate = async () => {
     try {
       setLoading(true);
+      if (!product.name) {
+        toast.error("Descreva o nome do produto antes de salvar");
+        return;
+      }
+
+      if (!items[0]) {
+        toast.error("Insira pelo menos 1 insumo do produto antes de salvar");
+        return;
+      }
       const client = api(token);
 
       const newProduct = {
@@ -203,7 +203,7 @@ export function ProductAddUpdate() {
     setItem({
       _id: `${items.length + 1}`,
       description: "",
-      amount: 1,
+      amount: "1",
       unit_cost: 0,
       total_cost: 0,
     });
@@ -235,13 +235,18 @@ export function ProductAddUpdate() {
       ...prev,
       inputs_cost,
       profit:
-        prev.sale_value - (prev.labor + prev.art + prev.others + inputs_cost),
-      total_cost: prev.labor + prev.art + prev.others + inputs_cost,
+        Number(prev.sale_value) -
+        (prev.labor + prev.art + Number(prev.others) + inputs_cost),
+      total_cost: prev.labor + prev.art + Number(prev.others) + inputs_cost,
     }));
     setCurrentId(null);
   };
 
   const handleAddItem = () => {
+    if (!item.input?._id) {
+      toast.error("Selecione um insumo para incluir");
+      return;
+    }
     const index = items.findIndex((item) => item._id === currentId);
     if (index >= 0) {
       const itemsCopy = [...items];
@@ -256,8 +261,9 @@ export function ProductAddUpdate() {
         ...prev,
         inputs_cost,
         profit:
-          prev.sale_value - (prev.labor + prev.art + prev.others + inputs_cost),
-        total_cost: prev.labor + prev.art + prev.others + inputs_cost,
+          Number(prev.sale_value) -
+          (prev.labor + prev.art + Number(prev.others) + inputs_cost),
+        total_cost: prev.labor + prev.art + Number(prev.others) + inputs_cost,
       }));
     } else {
       const itemsCopy = [...items];
@@ -272,8 +278,9 @@ export function ProductAddUpdate() {
         ...prev,
         inputs_cost,
         profit:
-          prev.sale_value - (prev.labor + prev.art + prev.others + inputs_cost),
-        total_cost: prev.labor + prev.art + prev.others + inputs_cost,
+          Number(prev.sale_value) -
+          (prev.labor + prev.art + Number(prev.others) + inputs_cost),
+        total_cost: prev.labor + prev.art + Number(prev.others) + inputs_cost,
       }));
     }
 
@@ -316,7 +323,7 @@ export function ProductAddUpdate() {
             setProduct((prev) => ({ ...prev, customer_name: e.target.value }))
           }
         />
-        <TextField
+        {/* <TextField
           defaultValue={product.labor.toFixed(2)}
           label="Serviço"
           placeHolder="Serviço"
@@ -327,7 +334,7 @@ export function ProductAddUpdate() {
               ...prev,
               labor: Number(e.target.value),
               profit:
-                prev.sale_value -
+                Number(prev.sale_value) -
                 (Number(e.target.value) +
                   prev.art +
                   prev.others +
@@ -351,7 +358,7 @@ export function ProductAddUpdate() {
               ...prev,
               art: Number(e.target.value),
               profit:
-                prev.sale_value -
+                Number(prev.sale_value) -
                 (prev.labor +
                   Number(e.target.value) +
                   prev.others +
@@ -363,9 +370,9 @@ export function ProductAddUpdate() {
                 prev.inputs_cost,
             }))
           }
-        />
+        /> */}
         <TextField
-          defaultValue={product.others.toFixed(2)}
+          defaultValue={`${product.others}`}
           label="Outros"
           placeHolder="Outros"
           type="number"
@@ -373,9 +380,9 @@ export function ProductAddUpdate() {
           onChange={(e) =>
             setProduct((prev) => ({
               ...prev,
-              others: Number(e.target.value),
+              others: e.target.value,
               profit:
-                prev.sale_value -
+                Number(prev.sale_value) -
                 (prev.labor +
                   prev.art +
                   Number(e.target.value) +
@@ -405,7 +412,7 @@ export function ProductAddUpdate() {
           disabled
         />
         <TextField
-          defaultValue={product.sale_value.toFixed(2)}
+          defaultValue={`${product.sale_value}`}
           label="Valor de venda"
           placeHolder="Valor de venda"
           type="number"
@@ -413,7 +420,7 @@ export function ProductAddUpdate() {
           onChange={(e) =>
             setProduct((prev) => ({
               ...prev,
-              sale_value: Number(e.target.value),
+              sale_value: e.target.value,
               profit: Number(e.target.value) - prev.total_cost,
             }))
           }
@@ -459,7 +466,7 @@ export function ProductAddUpdate() {
               },
               unit_cost: newValue?.unit_cost || 0,
               total_cost: !!newValue?.unit_cost
-                ? item.amount * newValue.unit_cost
+                ? Number(item.amount) * newValue.unit_cost
                 : 0,
             }));
           }}
@@ -474,7 +481,7 @@ export function ProductAddUpdate() {
           }
         />
         <TextField
-          defaultValue={item.amount.toFixed(3)}
+          defaultValue={`${item.amount}`}
           label="Quantidade"
           placeHolder="Quantidade"
           type="number"
@@ -482,7 +489,7 @@ export function ProductAddUpdate() {
           onChange={(e) =>
             setItem((prev) => ({
               ...prev,
-              amount: Number(e.target.value),
+              amount: e.target.value,
               total_cost: Number(e.target.value) * prev.unit_cost,
             }))
           }

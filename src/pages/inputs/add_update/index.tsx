@@ -15,9 +15,9 @@ import { useHistory } from "../../../hooks/history";
 interface IInputAddUpdate {
   name: string;
   amount: string;
-  yield: number;
-  value_package: number;
-  unit_cost: number;
+  yield: string;
+  value_package: string;
+  unit_cost: string;
   provider: string;
 }
 
@@ -25,9 +25,9 @@ export function InputAddUpdate() {
   const [input, setInput] = useState<IInputAddUpdate>({
     name: "",
     amount: "",
-    yield: 0,
-    unit_cost: 0,
-    value_package: 0,
+    yield: "0",
+    unit_cost: "0",
+    value_package: "0",
     provider: "",
   });
   const [loading, setLoading] = useState<boolean>(false);
@@ -65,6 +65,18 @@ export function InputAddUpdate() {
 
   const handleAddOrUpdate = async () => {
     try {
+      if (!input.name) {
+        toast.error("Insira o nome do insumo");
+        return;
+      }
+      if (!input.yield) {
+        toast.error("Insira o rendimento por pacote do insumo");
+        return;
+      }
+      if (!input.value_package) {
+        toast.error("Insira o valor do pacote do insumo");
+        return;
+      }
       setLoading(true);
       const client = api(token);
       if (id === "null") {
@@ -127,8 +139,13 @@ export function InputAddUpdate() {
           onChange={(e) =>
             setInput((prev) => ({
               ...prev,
-              yield: Number(e.target.value),
-              unit_cost: input.value_package / Number(e.target.value),
+              yield: e.target.value,
+              unit_cost: `${
+                Number(input.value_package) / Number(e.target.value) ===
+                Infinity
+                  ? 0
+                  : Number(input.value_package) / Number(e.target.value)
+              }`,
             }))
           }
         />
@@ -138,13 +155,22 @@ export function InputAddUpdate() {
           placeHolder="Valor do pacote"
           type="number"
           xs={6}
-          onChange={(e) =>
+          onChange={(e) => {
+            console.log(
+              Number(e.target.value),
+              Number(input.yield),
+              Number(e.target.value) / Number(input.yield)
+            );
             setInput((prev) => ({
               ...prev,
-              value_package: Number(e.target.value),
-              unit_cost: Number(e.target.value) / input.yield,
-            }))
-          }
+              value_package: e.target.value,
+              unit_cost: `${
+                Number(e.target.value) / Number(input.yield) === Infinity
+                  ? 0
+                  : Number(e.target.value) / Number(input.yield)
+              }`,
+            }));
+          }}
         />
 
         <TextField
