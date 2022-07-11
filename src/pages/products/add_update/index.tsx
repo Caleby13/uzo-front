@@ -284,6 +284,8 @@ export function ProductAddUpdate() {
     loadData();
   }, []);
 
+  console.log(item);
+
   if (loading) {
     return <Loading />;
   }
@@ -451,12 +453,14 @@ export function ProductAddUpdate() {
             setItem((prev) => ({
               ...prev,
               input: {
-                _id: newValue.id,
-                name: newValue.label,
-                unit_cost: newValue.unit_cost,
+                _id: newValue?.id || 0,
+                name: newValue?.label || 0,
+                unit_cost: newValue?.unit_cost || 0,
               },
-              unit_cost: newValue.unit_cost,
-              total_cost: item.amount * newValue.unit_cost,
+              unit_cost: newValue?.unit_cost || 0,
+              total_cost: !!newValue?.unit_cost
+                ? item.amount * newValue.unit_cost
+                : 0,
             }));
           }}
         />
